@@ -1,5 +1,5 @@
-from hw_3 import vrp_parser
 import random
+import vrp_parser
 
 
 def calculate_manhattan_distance(from_node, to_note, node_coords):
@@ -12,11 +12,9 @@ def find_next_node(current_node, node_coords, demands, truck):
     next_node = None
     next_node_distance = None
     for node_id, demand in demands.items():
-
-        if demand and truck['remained_capacity'] > demand and \
+        if node_id != current_node and demand and truck['remained_capacity'] > demand and \
                 (best_val is None
                  or best_val < demand / calculate_manhattan_distance(current_node, node_id, node_coords)):
-
             manhattan_distance = calculate_manhattan_distance(current_node, node_id, node_coords)
             best_val = demand / manhattan_distance
             next_node_distance = manhattan_distance
@@ -67,14 +65,43 @@ def generate_construction_heuristic(header, node_coords, demands, depot):
 
 
 def print_results(trucks, demands):
-    for trucks in trucks:
-        pass
+    total_demand = 0
+    total_distance_made = 0
+    for truck_id, truck in trucks.items():
+        total_demand += truck['demand_covered']
+        total_distance_made += truck['distance_made']
+        print("Truck {} path: {}".format(str(truck_id), ' '.join(map(str, truck['notes_visited']))))
 
+    print("Total distance made: ", total_distance_made)
+    print('The amount of demand that we covered: ', total_demand)
+    if not all(remained_demand == 0 for node_id, remained_demand in demands.items()):
+        print('----REMAINED NODES WITH DEMAND----')
+        print('node_id\tdemand')
+        for node_id, remained_demand in demands.items():
+            if remained_demand:
+                print("{}\t{}".format(node_id, remained_demand))
+    print('\n\n\n')
+
+
+def check_file(node_coords):
+    """
+        This function checks if there are two nodes in the same coords. If yes, we can't use this file since
+        manhattan distance for this nodes is zero and this will raise an ZeroDivisionError at find_next_node function
+    """
+    unique_nodes = set([(coords['x'], coords['y']) for node_id, coords in node_coords.items()])
+    return len(unique_nodes) == len(node_coords)
 
 
 def main():
-    header, node_coords, demands, depot = vrp_parser.main()
-    construction_heuristic = generate_construction_heuristic(header, node_coords, demands, depot)
+    # file_name = 'F-n45-k4.vrp'
+    file_name = input("Give file's name\n")
+    header, node_coords, demands, depot = vrp_parser.main(file_name)
+    # check if file is ok
+    file_is_ok = check_file(node_coords)
+    if file_is_ok:
+        generate_construction_heuristic(header, node_coords, demands, depot)
+    else:
+        print("File {} had problem so I skipped it".format(file_name))
 
 
 if __name__ == '__main__':

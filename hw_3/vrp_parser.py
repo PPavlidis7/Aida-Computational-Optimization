@@ -5,8 +5,7 @@
     Some vrp files from other libraries might have TIME_WINDOW_SECTION, STAND_TIME_SECTION 
     and PICKUP_SECTION. For those files you must add more while-loops in read_file function. 
 """
-import os
-
+import re
 
 def read_file(file_name):
     header = []
@@ -80,7 +79,7 @@ def handle_header(header):
             # a silly way to find easily the number of trucks
             for index, value in enumerate(header_line):
                 if value == 'trucks:':
-                    header_data['num_of_trucks'] = int(header_line[index + 1].split(',')[0])
+                    header_data['num_of_trucks'] = int(re.findall(r'\d+', header_line[index + 1].split(',')[0])[0])
         if header_line[0] == 'CAPACITY':
             header_data['truck_capacity'] = int(header_line[2])
             break
@@ -103,11 +102,5 @@ def handle_demand(demands):
     return demands_data
 
 
-def main():
-    file_name = os.path.join('../hw_1/A/' + 'A-n32-k5.vrp')
-    # header, node_coord, demands, depot = read_file(file_name)
+def main(file_name):
     return read_file(file_name)
-
-
-if __name__ == '__main__':
-    main()
