@@ -30,13 +30,13 @@ def reorder_truck_path(truck, node_coords):
 
 def improvement_heuristic(node_coords, trucks, value_to_improve):
     previous_best_cost = value_to_improve
-    """ We give 900 secs to this program to improve our first solution. At first, we shuffle a part of trucks' paths.
+    """ We give 600 secs to this program to improve our first solution. At first, we shuffle a part of trucks' paths.
     If this shuffling does not improve our solution, then we shuffle the whole path for each truck and then start again
     the previous calculation (path's part shuffling.
     """
     new_total_distance_made = 0
     start_time = time.time()
-    while time.time() - start_time < 900:
+    while time.time() - start_time < 600:
         for truck_id, truck in trucks.items():
             reorder_truck_path(truck, node_coords)
             new_total_distance_made += truck['distance_made']
@@ -46,7 +46,8 @@ def improvement_heuristic(node_coords, trucks, value_to_improve):
 
 
 def main():
-    file_name = '../hw_1/A/A-n38-k5.vrp'
+    # file_name = '../hw_1/A/A-n38-k5.vrp'
+    file_name = input("Give file's name\n")
     header, node_coords, demands, depot, trucks, value_to_improve = con_heu.main(file_name)
     if header and node_coords and demands and depot and trucks and value_to_improve:
         improvement_heuristic(node_coords, trucks, value_to_improve)
