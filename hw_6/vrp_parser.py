@@ -7,6 +7,7 @@
 """
 import re
 
+
 def read_file(file_name):
     header = []
     node_coord = []
@@ -63,10 +64,10 @@ def read_file(file_name):
 
     if len(header) and len(node_coord) and len(demands) and len(depot):
         return (
-                handle_header(header),
-                handle_coords(node_coord),
-                handle_demand(demands),
-                float(depot[0][0])
+            handle_header(header),
+            handle_coords(node_coord),
+            handle_demand(demands),
+            float(depot[0][0])
         )
     else:
         print("Something went wrong with file parsing.")

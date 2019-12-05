@@ -1,10 +1,12 @@
 """
     This is a parser for mps files. Its results are written to the "output.txt" file
 """
-import pandas
-import numpy as np
-import warnings
 import sys
+import warnings
+
+import numpy as np
+import pandas
+
 warnings.filterwarnings("ignore")
 
 

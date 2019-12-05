@@ -1,6 +1,7 @@
-import construction_heuristic as con_heu
 import time
 from random import shuffle
+
+import construction_heuristic as con_heu
 
 
 def reorder_truck_path(truck, node_coords):
@@ -17,7 +18,7 @@ def reorder_truck_path(truck, node_coords):
         new_distance = 0
         for index in range(len(potentially_new_path) - 1):
             new_distance += con_heu.calculate_manhattan_distance(potentially_new_path[index],
-                                                                 potentially_new_path[index+1], node_coords)
+                                                                 potentially_new_path[index + 1], node_coords)
 
         if new_distance < best_distance:
             counter_worse__continuous_path = 0

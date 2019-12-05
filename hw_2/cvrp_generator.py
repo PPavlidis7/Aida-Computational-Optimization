@@ -7,8 +7,8 @@
 
     If user selects the second way, we ask him to give these values
 """
-import sys
 import random
+import sys
 import time
 
 random.seed(int(time.time()))
@@ -50,12 +50,12 @@ def generate_nodes(dimension):
     seen_nodes = set()
     coords_upper_bound = 2000
 
-    while coords_upper_bound**2 < dimension:
+    while coords_upper_bound ** 2 < dimension:
         coords_upper_bound += dimension
 
     for node_id in range(1, dimension + 1):
         x, y = random.randint(0, coords_upper_bound), random.randint(0, coords_upper_bound)
-        while (x, y) in seen_nodes:     # create unique coords pairs
+        while (x, y) in seen_nodes:  # create unique coords pairs
             x, y = random.randint(0, dimension), random.randint(0, dimension)
         seen_nodes.add((x, y))
         nodes[node_id] = x, y

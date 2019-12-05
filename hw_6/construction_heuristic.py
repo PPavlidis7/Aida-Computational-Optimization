@@ -1,6 +1,7 @@
-import vrp_parser
 import operator
 import random
+
+import vrp_parser
 
 
 def calculate_manhattan_distance(from_node, to_note, node_coords):
