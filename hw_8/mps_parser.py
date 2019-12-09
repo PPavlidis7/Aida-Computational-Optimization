@@ -34,7 +34,7 @@ def __find_c0(line):
     if len(c0):
         c0 = float(re.sub("=", "", c0[0]))
     else:
-        c0 = 0
+        c0 = 0.0
     return c0
 
 
@@ -56,9 +56,9 @@ def __handle_file_data(file_data):
         if 'NAME' in file_data[0]:
             problem_name = file_data[line_index][14:22].strip()
             if 'maximization' in file_data[line_index]:
-                min_max = '1'
+                min_max = 1
             else:
-                min_max = '-1'
+                min_max = -1
             line_index += 1
             if 'ROWS' not in file_data[line_index]:
                 raise SyntaxError("Wrong file format. Expected ROWS section after NAME section")

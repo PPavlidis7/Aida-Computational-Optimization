@@ -1,3 +1,7 @@
+"""
+    This is script applies kton algorithm in a mps file.
+    In order to run: python Pavlidis_week(8) <file_name> <k_value>
+"""
 import sys
 
 import numpy as np
@@ -5,6 +9,16 @@ from mps_parser import parse_file
 
 
 def __apply_singleton(a_matrix_values, b_vector, c_vector, eqin, c0_value):
+    """
+    :param a_matrix_values: 2d ndarray
+    :param b_vector: 1d ndarray
+    :param c_vector: 1d ndarray
+    :param eqin: 1d ndarray
+    :param c0_value: float
+    :return: 2d ndarray, 1d ndarray, 1d ndarray, 1d ndarray, float
+
+    Apply singleton algorithm
+    """
     k_value = 1
     while k_value == 1:
         selected_row_index, line_most_right_nz_index = __select_line_index_to_apply_kton(a_matrix_values, eqin, k_value)
@@ -31,6 +45,14 @@ def __apply_singleton(a_matrix_values, b_vector, c_vector, eqin, c0_value):
 
 
 def __select_line_index_to_apply_kton(a_matrix_values, eqin, k_value):
+    """
+    :param a_matrix_values: 2d ndarray,
+    :param eqin: 1d ndarray,
+    :param k_value: int
+    :return: int, int
+
+    Find the row index and the column index that we will apply kton
+    """
     num_lines_nz = np.count_nonzero(a_matrix_values, axis=1)[::-1]
     selected_index = None
     line_most_right_nz_index = None
@@ -56,6 +78,17 @@ def __find_rows_to_change(a_matrix_values, column_index, selected_row_index):
 
 
 def __apply_kton(a_matrix_values, b_vector, c_vector, eqin, c0_value, k_value):
+    """
+    :param a_matrix_values: 2d ndarray
+    :param b_vector: 1d ndarray
+    :param c_vector: 1d ndarray
+    :param eqin: 1d ndarray
+    :param c0_value: float
+    :param k_value: int
+    :return: 2d ndarray, 1d ndarray, 1d ndarray, 1d ndarray, float
+
+    Apply kton algorithm
+    """
     k = k_value
     while k > 1:
         selected_row_index, line_most_right_nz_index = __select_line_index_to_apply_kton(a_matrix_values, eqin, k)
@@ -86,14 +119,17 @@ def __apply_kton(a_matrix_values, b_vector, c_vector, eqin, c0_value, k_value):
 
 
 def main():
-    # file_name = sys.argv[1]
-    # k_value = sys.argv[2]
-
-    file_name = 'afiro.mps'
-    k_value = 4
+    if len(sys.argv) < 3:
+        raise ValueError('Wrong input. Expected: python Pavlidis_week(8) <file_name> <k_value>')
+    else:
+        file_name = sys.argv[1]
+        k_value = sys.argv[2]
 
     a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = parse_file(file_name)
     # a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = get_mock_data()
+
+    if min_max == 1:
+        c_vector = c_vector * (-1)
 
     if k_value == 1:
         a_matrix_values, b_vector, c_vector, eqin, c0_value = __apply_singleton(a_matrix_values, b_vector, c_vector, eqin, c0_value)
@@ -102,6 +138,9 @@ def main():
 
 
 def get_mock_data():
+    """
+        A helper function in order to mock user's input
+    """
     a_matrix = np.asarray([
                 [0.0, 3.0, 0.0, 0.0],
                 [4.0, -3.0, 8.0, -1.0],
