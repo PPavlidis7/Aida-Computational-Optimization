@@ -79,7 +79,7 @@ def __remove_zero_rows_columns(a_matrix_values, b_vector, c_vector, eqin):
     return a_matrix_values, b_vector, c_vector, eqin, False
 
 
-def _calculate_r_vector(a_matrix, b_vector):
+def __calculate_r_vector(a_matrix, b_vector):
     """
     :param a_matrix: 2d ndarray
     :param b_vector: 1d ndarray
@@ -126,7 +126,7 @@ def __arithmetic_mean_scaling(a_matrix_values, b_vector, c_vector):
 
     Find r_vector and s_vector and apply arithmetic mean method at a_matrix_values, b_vector and c_vector
     """
-    r_vector = _calculate_r_vector(a_matrix_values, b_vector)
+    r_vector = __calculate_r_vector(a_matrix_values, b_vector)
     s_vector = __calculator_s_vector(a_matrix_values, c_vector)
     return r_vector, s_vector
 
@@ -137,8 +137,8 @@ def main():
     else:
         file_name = sys.argv[1]
 
-    # a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = parse_file(file_name)
-    a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = get_mock_data()
+    a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = parse_file(file_name)
+    # a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = get_mock_data()
 
     if min_max == 1:
         c_vector = c_vector * (-1)
