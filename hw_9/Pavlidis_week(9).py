@@ -54,7 +54,7 @@ def __remove_zero_columns(a_matrix_values, c_vector):
     return a_matrix_values, c_vector, find_zero_column
 
 
-def remove_zero_rows_columns(a_matrix_values, b_vector, c_vector, eqin):
+def __remove_zero_rows_columns(a_matrix_values, b_vector, c_vector, eqin):
     """
     :param a_matrix_values: 2d ndarray
     :param b_vector: 1d ndarray
@@ -79,7 +79,7 @@ def remove_zero_rows_columns(a_matrix_values, b_vector, c_vector, eqin):
     return a_matrix_values, b_vector, c_vector, eqin, False
 
 
-def calculate_r_vector(a_matrix, b_vector):
+def _calculate_r_vector(a_matrix, b_vector):
     """
     :param a_matrix: 2d ndarray
     :param b_vector: 1d ndarray
@@ -90,6 +90,8 @@ def calculate_r_vector(a_matrix, b_vector):
     r_vector = []
     for row_index, row_values in enumerate(a_matrix):
         num_lines_nz = np.count_nonzero(row_values, axis=0)
+        if np.sum(row_values) ==0:
+            raise ValueError('There are zero rows')
         r_row_value = num_lines_nz/np.sum(row_values)
         r_vector.append(r_row_value)
         a_matrix[row_index] = a_matrix[row_index] * r_row_value
@@ -97,7 +99,7 @@ def calculate_r_vector(a_matrix, b_vector):
     return np.asarray(r_vector)
 
 
-def calculator_s_vector(a_matrix, c_vector):
+def __calculator_s_vector(a_matrix, c_vector):
     """
     :param a_matrix: 2d ndarray
     :param c_vector: 1d ndarray
@@ -115,7 +117,7 @@ def calculator_s_vector(a_matrix, c_vector):
     return np.asarray(s_vector)
 
 
-def arithmetic_mean_scaling(a_matrix_values, b_vector, c_vector):
+def __arithmetic_mean_scaling(a_matrix_values, b_vector, c_vector):
     """
     :param a_matrix_values: 2d ndarray
     :param b_vector: 1d ndarray
@@ -124,8 +126,8 @@ def arithmetic_mean_scaling(a_matrix_values, b_vector, c_vector):
 
     Find r_vector and s_vector and apply arithmetic mean method at a_matrix_values, b_vector and c_vector
     """
-    r_vector = calculate_r_vector(a_matrix_values, b_vector)
-    s_vector = calculator_s_vector(a_matrix_values, c_vector)
+    r_vector = _calculate_r_vector(a_matrix_values, b_vector)
+    s_vector = __calculator_s_vector(a_matrix_values, c_vector)
     return r_vector, s_vector
 
 
@@ -135,16 +137,23 @@ def main():
     else:
         file_name = sys.argv[1]
 
-    a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = parse_file(file_name)
-    # a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = get_mock_data()
+    # a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = parse_file(file_name)
+    a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = get_mock_data()
 
     if min_max == 1:
         c_vector = c_vector * (-1)
 
     a_matrix_values, b_vector, c_vector, eqin, not_infeasible_or_unbounded = \
-        remove_zero_rows_columns(a_matrix_values, b_vector, c_vector, eqin)
+        __remove_zero_rows_columns(a_matrix_values, b_vector, c_vector, eqin)
     if not_infeasible_or_unbounded:
-        r_vector, s_vector = arithmetic_mean_scaling(a_matrix_values, b_vector, c_vector)
+        r_vector, s_vector = __arithmetic_mean_scaling(a_matrix_values, b_vector, c_vector)
+
+        print('a_matrix = \n', a_matrix_values)
+        print('b_vector = ', b_vector)
+        print('c_vector =', c_vector)
+        print('eqin = ', eqin)
+        print('r_vector', r_vector)
+        print('s_vector = ', s_vector)
 
 
 def get_mock_data():
