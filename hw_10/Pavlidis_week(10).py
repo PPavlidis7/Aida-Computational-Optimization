@@ -1,5 +1,5 @@
 """
-    This is script solve a problem from a mps file using exterior point algorithm.
+    This script solve a problem from a mps file using exterior point algorithm.
     In order to run: python Pavlidis_week(10) <file_name>
 """
 import sys
@@ -9,7 +9,7 @@ from mps_parser import parse_file
 import random
 
 
-TOLERANCE = 10 ** (-10)
+TOLERANCE = 10 ** (-16)
 
 
 def convert_constraints_to_equal(a_matrix_values, c_vector, eqin):
@@ -110,17 +110,18 @@ def calculate_z(c_vector, x_b, b):
 
 
 def phase_two(a_matrix_values, b_vector, c_vector, c0_value, s_n, p_set, x_b, d_b, b, n):
-    q_set = [index for index, value in enumerate(s_n) if value >= 0]
-    s_0 = np.sum(s_n[[index for index, value in enumerate(n['indexes']) if value in p_set]])
+    q_set = [n['indexes'][index] for index, value in enumerate(n['indexes']) if value not in p_set]
     count_iterations = 0
     while len(p_set):
+        s_0 = np.sum(s_n[[index for index, value in enumerate(n['indexes']) if value in p_set]])
         if all(value >= 0 for value in d_b) and s_0 == 0:
             # LP is optimal
             z = calculate_z(c_vector, x_b, b) + c0_value
             print(x_b, z)
             return x_b, z
         else:
-            x_b_divided_d_b = [(x_b[index] / abs(value)) for index, value in enumerate(d_b) if value < 0]
+            x_b_divided_d_b = [(x_b[index] / -d_b[index]) for index, value in enumerate(d_b) if value < 0 and
+                               abs(value) > TOLERANCE]
             if not len(x_b_divided_d_b):
                 print("The LP is unbounded")
                 break
@@ -150,26 +151,23 @@ def phase_two(a_matrix_values, b_vector, c_vector, c0_value, s_n, p_set, x_b, d_
             calculate_new_b_n(a_matrix_values, b, n)
             s_n = calculate_sn(c_vector, b, n)
             x_b = calculate_xb(b_vector, b)
-            h_j = np.dot(b['inverse'], a_matrix_values[:, p_set])
-            d_b = -h_j.sum(axis=1)
+            d_b = calculate_d_b(a_matrix_values, b, p_set)
             count_iterations += 1
-            # x = 1
     else:
         z = calculate_z(c_vector, x_b, b)
         print(x_b, z)
         return x_b, z + c0_value
-
-    # x = 1
 
 
 def calculate_theta_1(HrP, p_set, s_n, n):
     theta_value = None
     theta_index = None
     # find p indexes in s_n
-    s_n_indexes_belong_to_p_set = [index for index, value in enumerate(n['indexes']) if value in p_set]
+    # s_n_indexes_belong_to_p_set = [index for index, value in enumerate(n['indexes']) if value in p_set]
     for hrp_index, hrp_value in enumerate(HrP):
-        if hrp_value > 0 and hrp_index < len(s_n_indexes_belong_to_p_set):
-            tmp = -s_n[s_n_indexes_belong_to_p_set[hrp_index]]/hrp_value
+        if hrp_value > 0 and hrp_value > TOLERANCE:
+            # tmp = -s_n[s_n_indexes_belong_to_p_set[hrp_index]] / hrp_value
+            tmp = -s_n[n['indexes'].index(p_set[hrp_index])] / hrp_value
             if theta_value is None or tmp < theta_value:
                 theta_value = tmp
                 theta_index = hrp_index
@@ -182,10 +180,11 @@ def calculate_theta_2(HrQ, q_set, s_n, n):
     theta_value = None
     theta_index = None
     # find q indexes in s_n
-    s_n_indexes_belong_to_q_set = [index for index, value in enumerate(n['indexes']) if value in q_set]
+    # s_n_indexes_belong_to_q_set = [index for index, value in enumerate(n['indexes']) if value in q_set]
     for hrq_index, hrq_value in enumerate(HrQ):
-        if hrq_value < 0 and hrq_index < len(s_n_indexes_belong_to_q_set):
-            tmp = -s_n[s_n_indexes_belong_to_q_set[hrq_index]]/hrq_value
+        if hrq_value < 0 and abs(hrq_value) > TOLERANCE:
+            # tmp = -s_n[s_n_indexes_belong_to_q_set[hrq_index]] / hrq_value
+            tmp = -s_n[n['indexes'].index(q_set[hrq_index])] / hrq_value
             if theta_value is None or tmp < theta_value:
                 theta_value = tmp
                 theta_index = hrq_index
@@ -215,18 +214,16 @@ def main():
     x_b = calculate_xb(b_vector, b)
     d_b = calculate_d_b(a_matrix_values, b, p_set)
     greek_b = max([(x_b[index] / -d_b[index]) for index, value in enumerate(x_b) if value < 0], default=-np.inf)
-    greek_a = min([(x_b[index] / -d_b[index]) for index, value in enumerate(d_b) if value < 0], default=np.inf)
+    greek_a = min([(x_b[index] / -d_b[index]) for index, value in enumerate(d_b) if value < 0 and
+                   abs(value) > TOLERANCE], default=np.inf)
 
     if not len(p_set) or greek_b > greek_a:
         raise NotImplementedError('Problem {} needs phase 1'.format(file_name))
 
-    # noinspection SpellCheckingInspection,PyTypeChecker
     __scipy_solution = linprog(c_vector, A_eq=a_matrix_values, b_eq=b_vector, method='revised simplex')
     print(__scipy_solution)
-    print('-'*10)
+    print('-' * 10)
     phase_two(a_matrix_values, b_vector, c_vector, c0_value, s_n, p_set, x_b, d_b, b, n)
-
-    # x = 1
 
 
 def get_mock_data():
