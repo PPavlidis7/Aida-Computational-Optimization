@@ -9,7 +9,7 @@ from mps_parser import parse_file
 import random
 
 
-TOLERANCE = 10 ** (-16)
+TOLERANCE = 10 ** (-18)
 
 
 def convert_constraints_to_equal(a_matrix_values, c_vector, eqin):
@@ -145,6 +145,7 @@ def phase_two(a_matrix_values, b_vector, c_vector, c0_value, s_n, p_set, x_b, d_
             else:
                 entering_var = q_set[theta_2_index]
                 q_set[theta_2_index] = k
+            print(r, count_iterations)
 
             n['indexes'] = p_set + q_set
             b['indexes'][r] = entering_var
@@ -194,12 +195,12 @@ def calculate_theta_2(HrQ, q_set, s_n, n):
 
 
 def main():
-    # if len(sys.argv) < 2:
-    #     raise ValueError('Wrong input. Expected: python Pavlidis_week(10) <file_name>')
-    # else:
-    #     file_name = sys.argv[1]
+    if len(sys.argv) < 2:
+        raise ValueError('Wrong input. Expected: python Pavlidis_week(10) <file_name>')
+    else:
+        file_name = sys.argv[1]
 
-    file_name = 'sdata1_100x100.mps'
+    # file_name = 'sdata1_200x200.mps'
     a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = parse_file(file_name)
     # a_matrix_values, b_vector, c_vector, eqin, c0_value, min_max = get_mock_data()
 
