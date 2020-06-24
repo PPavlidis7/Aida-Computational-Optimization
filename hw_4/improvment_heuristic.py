@@ -37,7 +37,7 @@ def improvement_heuristic(node_coords, trucks, value_to_improve):
     """
     new_total_distance_made = 0
     start_time = time.time()
-    while time.time() - start_time < 600:
+    while time.time() - start_time < 100:
         for truck_id, truck in trucks.items():
             reorder_truck_path(truck, node_coords)
             new_total_distance_made += truck['distance_made']
@@ -47,8 +47,8 @@ def improvement_heuristic(node_coords, trucks, value_to_improve):
 
 
 def main():
-    # file_name = '../hw_1/A/A-n38-k5.vrp'
-    file_name = input("Give file's name\n")
+    file_name = '../hw_1/A/A-n38-k5.vrp'
+    # file_name = input("Give file's name\n")
     header, node_coords, demands, depot, trucks, value_to_improve = con_heu.main(file_name)
     if header and node_coords and demands and depot and trucks and value_to_improve:
         improvement_heuristic(node_coords, trucks, value_to_improve)

@@ -92,7 +92,7 @@ def print_results(trucks):
 def check_file(node_coords):
     """
         This function checks if there are two nodes in the same coords. If yes, we can't use this file since
-        manhattan distance for this nodes is zero and this will raise an ZeroDivisionError at find_next_node function
+        manhattan distance for these nodes is zero and this will raise a ZeroDivisionError at find_next_node function.
     """
     unique_nodes = set([(coords['x'], coords['y']) for node_id, coords in node_coords.items()])
     return len(unique_nodes) == len(node_coords)
